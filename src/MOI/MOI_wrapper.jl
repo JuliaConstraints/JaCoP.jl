@@ -1,3 +1,12 @@
+# Largely inspired by CPLEXCP.jl.
+# Main differences: 
+# - no support for quadratic functions (for now?)
+# - no support for adding int/bool constraint on variables (only at creation)
+# TODOs: 
+# - objective
+# - var/cons name
+# - parameters: number of threads, time limit, raw
+
 @enum(VariableType, CONTINUOUS, BINARY, INTEGER, SET, CIRCUIT)
 
 mutable struct VariableInfo
@@ -58,9 +67,6 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
     # # Cache parts of a solution.
     # cached_solution_state::Union{Nothing, Bool}
 
-    # # Handle callbacks. WIP.
-    # callback_state::CallbackState
-
     # # Mappings from variable and constraint names to their indices. These are
     # # lazily built on-demand, so most of the time, they are `nothing`.
     # # The solver's functionality is not useful in this case, as it can only
@@ -113,7 +119,6 @@ function MOI.empty!(model::Optimizer)
     # model.cached_solution_state = nothing
     # model.name_to_variable = nothing
     # model.name_to_constraint = nothing
-    # model.callback_state = CB_NONE
     return
 end
 
@@ -128,8 +133,89 @@ function MOI.is_empty(model::Optimizer)
     # model.name_to_variable !== nothing && return false
     # model.name_to_constraint !== nothing && return false
     # model.cached_solution_state !== nothing && return false
-    # model.callback_state != CB_NONE && return false
     return true
 end
 
 MOI.get(::Optimizer, ::MOI.SolverName) = "JaCoP"
+
+## Types of objectives and constraints that are supported.
+
+function MOI.supports(
+    ::Optimizer,
+    ::MOI.ObjectiveFunction{F},
+) where {
+    F <: Union{
+        MOI.VariableIndex,
+        MOI.ScalarAffineFunction{Float64},
+    },
+}
+    return true
+end
+
+function MOI.supports_constraint(
+    ::Optimizer,
+    ::Type{MOI.VariableIndex},
+    ::Type{F},
+) where {
+    T <: Union{Int, Float64},
+    F <: Union{
+        MOI.EqualTo{T},
+        MOI.LessThan{T},
+        MOI.GreaterThan{T},
+        MOI.Interval{T},
+    },
+}
+    return true
+end
+
+function MOI.supports_constraint(
+    ::Optimizer,
+    ::Type{MOI.ScalarAffineFunction{T}},
+    ::Type{F},
+) where {
+    T <: Union{Int, Float64},
+    F <:
+    Union{MOI.EqualTo{T}, MOI.LessThan{T}, MOI.GreaterThan{T}, MOI.Interval{T}},
+}
+    return true
+end
+
+MOI.supports(::Optimizer, ::MOI.VariableName, ::Type{MOI.VariableIndex}) = true
+function MOI.supports(
+    ::Optimizer,
+    ::MOI.ConstraintName,
+    ::Type{<:MOI.ConstraintIndex},
+)
+    return true
+end
+
+MOI.supports(::Optimizer, ::MOI.Name) = true
+MOI.supports(::Optimizer, ::MOI.Silent) = true
+# MOI.supports(::Optimizer, ::MOI.NumberOfThreads) = true
+# MOI.supports(::Optimizer, ::MOI.TimeLimitSec) = true
+# MOI.supports(::Optimizer, ::MOI.ObjectiveSense) = true
+# MOI.supports(::Optimizer, ::MOI.RawOptimizerAttribute) = true
+
+function MOI.copy_to(dest::Optimizer, src::MOI.ModelLike)
+    return MOI.Utilities.default_copy_to(dest, src)
+end
+
+function MOI.get(::Optimizer, ::MOI.ListOfVariableAttributesSet)
+    return MOI.AbstractVariableAttribute[MOI.VariableName()]
+end
+
+function MOI.get(model::Optimizer, ::MOI.ListOfModelAttributesSet)
+    attributes = Any[MOI.ObjectiveSense()]
+    typ = MOI.get(model, MOI.ObjectiveFunctionType())
+    if typ !== nothing
+        push!(attributes, MOI.ObjectiveFunction{typ}())
+    end
+    if MOI.get(model, MOI.Name()) != ""
+        push!(attributes, MOI.Name())
+    end
+    return attributes
+end
+
+function MOI.get(::Optimizer, ::MOI.ListOfConstraintAttributesSet)
+    return MOI.AbstractConstraintAttribute[MOI.ConstraintName()]
+end

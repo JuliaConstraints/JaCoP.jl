@@ -52,4 +52,7 @@ function jacop_java_init(init_java::Bool=true)
     return
 end
 
+include("java_wrapper.jl")
+include("MOI/MOI_wrapper.jl")
+
 end

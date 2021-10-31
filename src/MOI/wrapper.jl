@@ -6,6 +6,7 @@
 # - objective
 # - var/cons name
 # - parameters: number of threads, time limit, raw
+# - looks like JaCoP is as immutable as possible: looks like it's impossible to change the name of a variable, e.g.
 
 @enum(VariableType, CONTINUOUS, BINARY, INTEGER, SET, CIRCUIT)
 
@@ -19,6 +20,17 @@ mutable struct VariableInfo
     # and bound constraints.
     lb::Real
     ub::Real
+end
+
+function VariableInfo(index::MOI.VariableIndex, variable::Variable)
+    return VariableInfo(
+        index,
+        variable,
+        "",
+        INTEGER,
+        typemin(Int),
+        typemax(Int),
+    )
 end
 
 mutable struct ConstraintInfo

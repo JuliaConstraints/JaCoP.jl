@@ -10,7 +10,7 @@ const Store = JavaObject{Symbol("org.jacop.core.Store")}
 
 const BooleanVar = JavaObject{Symbol("org.jacop.core.BooleanVar")}
 const IntVar = JavaObject{Symbol("org.jacop.core.IntVar")}
-const SetVar = JavaObject{Symbol("org.jacop.set.core.FloatVar")}
+const SetVar = JavaObject{Symbol("org.jacop.set.core.SetVar")}
 const FloatVar = JavaObject{Symbol("org.jacop.floats.core.FloatVar")}
 const CircuitVar = JavaObject{Symbol("org.jacop.constraints.CircuitVar")}
 

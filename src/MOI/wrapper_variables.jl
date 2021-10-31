@@ -53,21 +53,29 @@ function _make_floatvar(
             model.inner,
         )
     else
-        if lb === nothing
-            lb = typemin(Float64)
+        lb_ = lb
+        if lb_ === nothing
+            lb_ = typemin(Float64)
         end
-        if ub === nothing
-            ub = typemax(Float64)
+
+        ub_ = ub
+        if ub_ === nothing
+            ub_ = typemax(Float64)
         end
 
         FloatVar(
             (Store, jdouble, jdouble),
             model.inner,
-            lb,
-            ub,
+            lb_,
+            ub_,
         )
     end
-    return _make_var(model, v, set)
+
+    vindex, cindex = _make_var(model, v, set)
+    _info(model, vindex).type = CONTINUOUS
+    _info(model, vindex).lb = lb
+    _info(model, vindex).ub = ub
+    return vindex, cindex
 end
 
 function _make_intvar(
@@ -82,22 +90,28 @@ function _make_intvar(
             model.inner,
         )
     else
-        if lb === nothing
-            lb = typemin(Int)
+        lb_ = lb
+        if lb_ === nothing
+            lb_ = typemin(Int)
         end
-        if ub === nothing
-            ub = typemax(Int)
+
+        ub_ = ub
+        if ub_ === nothing
+            ub_ = typemax(Int)
         end
         
         IntVar(
             (Store, jdouble, jdouble),
             model.inner,
-            lb,
-            ub,
+            lb_,
+            ub_,
         )
     end
+
     vindex, cindex = _make_var(model, v, set)
     _info(model, vindex).type = INTEGER
+    _info(model, vindex).lb = lb
+    _info(model, vindex).ub = ub
     return vindex, cindex
 end
 

@@ -13,13 +13,13 @@
 mutable struct VariableInfo
     index::MOI.VariableIndex
     variable::Variable
-    name::String
+    name::String # TODO: remove me?
     type::VariableType
 
     # Variable bounds: either integers or floats. Needed for is_valid on VariableIndex 
     # and bound constraints.
-    lb::Real
-    ub::Real
+    lb::Union{Nothing, Integer, Float64}
+    ub::Union{Nothing, Integer, Float64}
 end
 
 function VariableInfo(index::MOI.VariableIndex, variable::Variable)
@@ -28,8 +28,8 @@ function VariableInfo(index::MOI.VariableIndex, variable::Variable)
         variable,
         "",
         INTEGER,
-        typemin(Int),
-        typemax(Int),
+        nothing,
+        nothing,
     )
 end
 

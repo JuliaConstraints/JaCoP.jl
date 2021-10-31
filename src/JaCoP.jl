@@ -54,6 +54,8 @@ end
 
 include("java_wrapper.jl")
 include("MOI/wrapper.jl")
+include("MOI/wrapper_constraints.jl")
+include("MOI/wrapper_constraints_singlevar.jl")
 include("MOI/wrapper_variables.jl")
 
 end

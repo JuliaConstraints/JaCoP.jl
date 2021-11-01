@@ -1,3 +1,10 @@
+function _parse_to_vars(
+    model::Optimizer,
+    f::MOI.VectorOfVariables,
+)
+    return [_info(model, v) for v in f.variables]
+end
+
 function _parse_to_coeffs_vars(
     model::Optimizer,
     f::MOI.ScalarAffineFunction{T},

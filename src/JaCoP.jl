@@ -55,6 +55,7 @@ end
 include("java_wrapper.jl")
 include("MOI/wrapper.jl")
 include("MOI/parse.jl") # Must come after wrapper.jl.
+include("MOI/wrapper_constraints_cp.jl")
 include("MOI/wrapper_constraints_mo.jl")
 include("MOI/wrapper_constraints_singlevar.jl")
 include("MOI/wrapper_constraints.jl")

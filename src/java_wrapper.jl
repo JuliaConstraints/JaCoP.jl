@@ -16,6 +16,8 @@ const CircuitVar = JavaObject{Symbol("org.jacop.constraints.CircuitVar")}
 
 const Constraint = JavaObject{Symbol("org.jacop.constraints.Constraint")}
 const LinearInt = JavaObject{Symbol("org.jacop.constraints.LinearInt")}
+const Alldifferent = JavaObject{Symbol("org.jacop.constraints.Alldifferent")}
+const In = JavaObject{Symbol("org.jacop.constraints.In")}
 
 # Unions of types to model Java type hierarchy.
 

@@ -112,3 +112,103 @@ function _make_boolvar(model::Optimizer, set::MOI.AbstractScalarSet)
     _info(model, vindex).type = BINARY
     return vindex, cindex
 end
+
+function supports_add_constrained_variables(
+    ::Optimizer,
+    ::Type{F},
+) where {
+    F <: Union{
+        MOI.EqualTo{Float64},
+        MOI.LessThan{Float64},
+        MOI.GreaterThan{Float64},
+        MOI.Interval{Float64},
+        MOI.EqualTo{Int},
+        MOI.LessThan{Int},
+        MOI.GreaterThan{Int},
+        MOI.Interval{Int},
+        MOI.ZeroOne,
+        MOI.Integer,
+    },
+}
+    return true
+end
+
+function MOI.add_variable(model::Optimizer)
+    v = FloatVar((Store,), model.inner)
+    vindex = _make_var(model, v)
+    _info(model, vindex).type = CONTINUOUS
+    _info(model, vindex).lb = lb
+    _info(model, vindex).ub = ub
+    return vindex
+end
+
+
+function MOI.add_constrained_variable(
+    model::Optimizer,
+    set::MOI.GreaterThan{T},
+) where {T <: Real}
+    return _make_floatvar(model, set, lb=set.lower)
+end
+
+function MOI.add_constrained_variable(
+    model::Optimizer,
+    set::MOI.LessThan{T},
+) where {T <: Real}
+    return _make_floatvar(model, set, lb=set.upper)
+end
+
+function MOI.add_constrained_variable(
+    model::Optimizer,
+    set::MOI.EqualTo{T},
+) where {T <: Real}
+    return _make_floatvar(model, set, lb=set.value, ub=set.value)
+end
+
+function MOI.add_constrained_variable(
+    model::Optimizer,
+    set::MOI.Interval{T},
+) where {T <: Real}
+    return _make_floatvar(model, set, lb=set.lower, ub=set.upper)
+end
+
+function MOI.add_constrained_variable(
+    model::Optimizer,
+    set::MOI.GreaterThan{T},
+) where {T <: Integer}
+    return _make_intvar(model, set, lb=set.lower)
+end
+
+function MOI.add_constrained_variable(
+    model::Optimizer,
+    set::MOI.LessThan{T},
+) where {T <: Integer}
+    return _make_intvar(model, set, lb=set.upper)
+end
+
+function MOI.add_constrained_variable(
+    model::Optimizer,
+    set::MOI.EqualTo{T},
+) where {T <: Integer}
+    return _make_intvar(model, set, lb=set.value, ub=set.value)
+end
+
+function MOI.add_constrained_variable(
+    model::Optimizer,
+    set::MOI.Interval{T},
+) where {T <: Integer}
+    return _make_intvar(model, set, lb=set.lower, ub=set.upper)
+end
+
+function MOI.add_constrained_variable(model::Optimizer, set::MOI.ZeroOne)
+    return _make_boolvar(model, set)
+end
+
+function MOI.add_constrained_variable(model::Optimizer, set::MOI.Integer)
+    return _make_intvar(model, set)
+end
+
+function MOI.is_valid(model::Optimizer, v::MOI.VariableIndex)
+    return haskey(model.variable_info, v)
+end
+
+# No deletion allowed.

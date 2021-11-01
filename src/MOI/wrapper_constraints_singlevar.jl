@@ -63,3 +63,22 @@ function MOI.is_valid(
 
     return _info(model, index).type == INTEGER
 end
+
+function MOI.get(
+    model::Optimizer,
+    ::MOI.ConstraintFunction,
+    c::MOI.ConstraintIndex{MOI.VariableIndex, <:Any},
+)
+    MOI.throw_if_not_valid(model, c)
+    return MOI.VariableIndex(MOI.VariableIndex(c.value))
+end
+
+function MOI.set(
+    ::Optimizer,
+    ::MOI.ConstraintFunction,
+    ::MOI.ConstraintIndex{MOI.VariableIndex, S},
+    ::MOI.VariableIndex,
+) where {S}
+    throw(MOI.SettingVariableIndexFunctionNotAllowed())
+    return
+end

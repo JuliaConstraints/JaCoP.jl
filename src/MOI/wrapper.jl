@@ -169,7 +169,7 @@ function MOI.supports_constraint(
     ::Type{MOI.VariableIndex},
     ::Type{F},
 ) where {
-    T <: Union{Int, Float64},
+    T <: Union{Int32, Float64},
     F <: Union{
         MOI.EqualTo{T},
         MOI.LessThan{T},
@@ -185,9 +185,10 @@ function MOI.supports_constraint(
     ::Type{MOI.ScalarAffineFunction{T}},
     ::Type{F},
 ) where {
-    T <: Union{Int, Float64},
+    T <: Union{Int32, Float64},
     F <:
-    Union{MOI.EqualTo{T}, MOI.LessThan{T}, MOI.GreaterThan{T}, MOI.Interval{T}},
+    Union{MOI.EqualTo{T}, MOI.LessThan{T}, MOI.GreaterThan{T}},
+    # No interval!
 }
     return true
 end

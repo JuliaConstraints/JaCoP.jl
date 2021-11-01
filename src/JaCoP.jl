@@ -53,9 +53,11 @@ function jacop_java_init(init_java::Bool=true)
 end
 
 include("java_wrapper.jl")
+include("MOI/parse.jl")
 include("MOI/wrapper.jl")
-include("MOI/wrapper_constraints.jl")
+include("MOI/wrapper_constraints_mo.jl")
 include("MOI/wrapper_constraints_singlevar.jl")
+include("MOI/wrapper_constraints.jl")
 include("MOI/wrapper_variables.jl")
 
 end

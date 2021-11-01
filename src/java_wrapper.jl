@@ -15,6 +15,7 @@ const FloatVar = JavaObject{Symbol("org.jacop.floats.core.FloatVar")}
 const CircuitVar = JavaObject{Symbol("org.jacop.constraints.CircuitVar")}
 
 const Constraint = JavaObject{Symbol("org.jacop.constraints.Constraint")}
+const LinearInt = JavaObject{Symbol("org.jacop.constraints.LinearInt")}
 
 # Unions of types to model Java type hierarchy.
 

@@ -82,8 +82,8 @@ end
 function _make_intvar(
     model::Optimizer,
     set::MOI.AbstractScalarSet;
-    lb::Int32=typemin(Int),
-    ub::Int32=typemax(Int),
+    lb::Int32=typemin(Int32),
+    ub::Int32=typemax(Int32),
 )
     v = if lb === nothing && ub === nothing
         FloatVar(
@@ -91,7 +91,7 @@ function _make_intvar(
             model.inner,
         )
     else
-        lb_, ub_ = _sanitise_bounds(lb, ub, Int)
+        lb_, ub_ = _sanitise_bounds(lb, ub, Int32)
         IntVar(
             (Store, jdouble, jdouble),
             model.inner,

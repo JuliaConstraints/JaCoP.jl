@@ -1,3 +1,6 @@
+# Good source of mappings from MiniZinc: 
+# https://github.com/radsz/jacop/blob/develop/src/main/java/org/jacop/fz/constraints/GlobalConstraints.java
+
 # CP.AllDifferent
 function MOI.supports_constraint(
     ::Optimizer,

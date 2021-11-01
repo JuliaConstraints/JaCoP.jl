@@ -58,9 +58,6 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
     # The model name.
     name::String
 
-    # A flag to keep track of MOI.Silent.
-    silent::Bool
-
     # A mapping from the MOI.VariableIndex to the CPLEX variable object.
     # VariableInfo also stores some additional fields like the type of variable.
     variable_info::CleverDicts.CleverDict{MOI.VariableIndex, VariableInfo}
@@ -96,8 +93,6 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
         model = new()
         model.inner = Store()
 
-        MOI.set(model, MOI.Silent(), false)
-
         model.variable_info =
             CleverDicts.CleverDict{MOI.VariableIndex, VariableInfo}()
         model.constraint_info = Dict{MOI.ConstraintIndex, ConstraintInfo}()
@@ -118,7 +113,7 @@ end
 Base.show(io::IO, model::Optimizer) = show(io, model.inner)
 
 function MOI.empty!(model::Optimizer)
-    model.inner = JavaCPOModel()
+    model.inner = Store()
     model.name = ""
     empty!(model.variable_info)
     empty!(model.constraint_info)
@@ -203,7 +198,6 @@ function MOI.supports(
 end
 
 MOI.supports(::Optimizer, ::MOI.Name) = true
-MOI.supports(::Optimizer, ::MOI.Silent) = true
 # MOI.supports(::Optimizer, ::MOI.NumberOfThreads) = true
 # MOI.supports(::Optimizer, ::MOI.TimeLimitSec) = true
 # MOI.supports(::Optimizer, ::MOI.ObjectiveSense) = true

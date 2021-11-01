@@ -41,6 +41,16 @@ function _make_vars(model::Optimizer, variables::Vector{<:Variable})
     return indices
 end
 
+function _sanitise_bounds(lb::Real, ub::Real, T)
+    if lb === nothing
+        lb = typemin(T)
+    end
+    if ub === nothing
+        ub = typemax(T)
+    end
+    return lb, ub
+end
+
 function _make_floatvar(
     model::Optimizer,
     set::MOI.AbstractScalarSet;
@@ -53,16 +63,7 @@ function _make_floatvar(
             model.inner,
         )
     else
-        lb_ = lb
-        if lb_ === nothing
-            lb_ = typemin(Float64)
-        end
-
-        ub_ = ub
-        if ub_ === nothing
-            ub_ = typemax(Float64)
-        end
-
+        lb_, ub_ = _sanitise_bounds(lb, ub, Float64)
         FloatVar(
             (Store, jdouble, jdouble),
             model.inner,
@@ -90,16 +91,7 @@ function _make_intvar(
             model.inner,
         )
     else
-        lb_ = lb
-        if lb_ === nothing
-            lb_ = typemin(Int)
-        end
-
-        ub_ = ub
-        if ub_ === nothing
-            ub_ = typemax(Int)
-        end
-        
+        lb_, ub_ = _sanitise_bounds(lb, ub, Int)
         IntVar(
             (Store, jdouble, jdouble),
             model.inner,

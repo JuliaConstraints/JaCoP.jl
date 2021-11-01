@@ -1,10 +1,8 @@
 function _has_lb(model::Optimizer, index::MOI.VariableIndex)
-    return _get_lb(model, index) != -IloInfinity &&
-           _get_lb(model, index) != Float64(IloMinInt)
+    return _info(model, index).lb !== nothing
 end
 function _has_ub(model::Optimizer, index::MOI.VariableIndex)
-    return _get_ub(model, index) != IloInfinity &&
-           _get_ub(model, index) != Float64(IloMaxInt)
+    return _info(model, index).ub !== nothing
 end
 
 function MOI.is_valid(
@@ -39,7 +37,7 @@ function MOI.is_valid(
 ) where {T <: Real}
     index = MOI.VariableIndex(c.value)
     return MOI.is_valid(model, index) &&
-           _get_lb(model, index) == _get_ub(model, index)
+           _info(model, index).lb == _info(model, index).ub
 end
 
 function MOI.is_valid(
@@ -51,8 +49,7 @@ function MOI.is_valid(
         return false
     end
 
-    info = _info(model, index)
-    return info.type == BINARY || info.binary !== nothing
+    return _info(model, index).type == BINARY
 end
 
 function MOI.is_valid(
@@ -64,6 +61,5 @@ function MOI.is_valid(
         return false
     end
 
-    info = _info(model, index)
-    return info.type == INTEGER || info.integer !== nothing
+    return _info(model, index).type == INTEGER
 end

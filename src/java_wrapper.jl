@@ -18,6 +18,7 @@ const Constraint = JavaObject{Symbol("org.jacop.constraints.Constraint")}
 const LinearInt = JavaObject{Symbol("org.jacop.constraints.LinearInt")}
 const Alldifferent = JavaObject{Symbol("org.jacop.constraints.Alldifferent")}
 const In = JavaObject{Symbol("org.jacop.constraints.In")}
+const XeqC = JavaObject{Symbol("org.jacop.constraints.XeqC")}
 
 # Unions of types to model Java type hierarchy.
 

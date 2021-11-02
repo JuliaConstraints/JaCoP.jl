@@ -40,6 +40,15 @@ function MOI.is_valid(
            _info(model, index).lb == _info(model, index).ub
 end
 
+function _build_constraint(
+    model::Optimizer,
+    f::MOI.VariableIndex,
+    s::MOI.EqualTo{T},
+) where {T <: Integer}
+    v = _info(model, f).variable
+    return XeqC(v, s.value)
+end
+
 function MOI.is_valid(
     model::Optimizer,
     c::MOI.ConstraintIndex{MOI.VariableIndex, MOI.ZeroOne},
@@ -105,7 +114,6 @@ function MOI.add_constraint(
     end
 
     index = MOI.ConstraintIndex{F, S}(length(model.constraint_info) + 1)
-    jacop_add_constraint_to_store(model.inner, constr)
     model.constraint_info[index] = ConstraintInfo(index, nothing, f, s)
     return index
 end

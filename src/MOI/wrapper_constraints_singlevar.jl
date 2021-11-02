@@ -82,3 +82,30 @@ function MOI.set(
     throw(MOI.SettingVariableIndexFunctionNotAllowed())
     return
 end
+
+# CP.Domain.
+function MOI.supports_constraint(
+    ::Optimizer,
+    ::MOI.VariableIndex,
+    ::CP.Domain{T},
+) where {T <: Integer}
+    return true
+end
+
+function MOI.add_constraint(
+    model::Optimizer,
+    f::MOI.VariableIndex,
+    s::CP.Domain{T},
+) where {T <: Integer}
+    # Add each possible value separately. Same logic as
+    # https://github.com/radsz/jacop/blob/develop/src/main/java/org/jacop/fz/VariablesParameters.java#L238-L267
+    v = _info(model, f).variable
+    for e in s.values
+        jcall(v, "addDom", (jint, jint), e, e)
+    end
+
+    index = MOI.ConstraintIndex{F, S}(length(model.constraint_info) + 1)
+    jacop_add_constraint_to_store(model.inner, constr)
+    model.constraint_info[index] = ConstraintInfo(index, nothing, f, s)
+    return index
+end

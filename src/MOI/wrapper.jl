@@ -36,7 +36,7 @@ end
 mutable struct ConstraintInfo
     # Only necessary information to access an existing constraint, delete it when needed.
     index::MOI.ConstraintIndex
-    constraint::Constraint
+    constraint::Union{Constraint, Nothing}
     f::Union{MOI.AbstractScalarFunction, MOI.AbstractVectorFunction}
     set::MOI.AbstractSet
     name::String
@@ -44,7 +44,7 @@ end
 
 function ConstraintInfo(
     index::MOI.ConstraintIndex,
-    constraint::Constraint,
+    constraint::Union{Constraint, Nothing},
     f::Union{MOI.AbstractScalarFunction, MOI.AbstractVectorFunction},
     set::MOI.AbstractSet,
 )

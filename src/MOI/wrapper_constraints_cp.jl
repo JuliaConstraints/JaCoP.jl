@@ -26,30 +26,11 @@ function _build_constraint(
     return Alldifferent(_parse_to_vars(model, f))
 end
 
-# # CP.Domain
-# function MOI.supports_constraint(
-#     ::Optimizer,
-#     ::Type{F},
-#     ::Type{S},
-# ) where {
-#     T <: Int,
-#     F <: Union{MOI.VariableIndex, MOI.ScalarAffineFunction{T}},
-#     S <: CP.Domain{T},
-# }
-#     return true
-# end
-
-# function _build_constraint(
-#     model::Optimizer,
-#     f::Union{MOI.VariableIndex, MOI.ScalarAffineFunction{T}},
-#     s::CP.Domain{T},
-# ) where {T <: Int}
-#     return cpo_java_allowedassignments(
-#         model.inner,
-#         _parse(model, f),
-#         collect(Int32(v) for v in s.values),
-#     )
-# end
+# CP.Domain
+# Cannot be reified, hence no _build_constraint!
+# Only for VariableIndex-in-Domain.
+# Not implemented using In, because IntDomain is too limited (only a few
+# values are possible).
 
 # # CP.AntiDomain
 # function MOI.supports_constraint(

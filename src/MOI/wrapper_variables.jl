@@ -93,7 +93,7 @@ function _make_intvar(
     else
         lb_, ub_ = _sanitise_bounds(lb, ub, Int32)
         IntVar(
-            (Store, jdouble, jdouble),
+            (Store, jint, jint),
             model.inner,
             lb_,
             ub_,
@@ -113,7 +113,7 @@ function _make_boolvar(model::Optimizer, set::MOI.AbstractScalarSet)
     return vindex, cindex
 end
 
-function supports_add_constrained_variables(
+function supports_add_constrained_variable(
     ::Optimizer,
     ::Type{F},
 ) where {

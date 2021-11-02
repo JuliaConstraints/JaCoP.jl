@@ -30,7 +30,7 @@ end
 # Cannot be reified, hence no _build_constraint!
 # Only for VariableIndex-in-Domain.
 # Not implemented using In, because IntDomain is too limited (only a few
-# values are possible).
+# values are possible in SmallDenseDomain or intervals).
 
 # # CP.AntiDomain
 # function MOI.supports_constraint(

@@ -4,6 +4,7 @@ const OPTIMIZER = JaCoP.Optimizer()
 const BRIDGED_OPTIMIZER = MOI.Bridges.full_bridge_optimizer(OPTIMIZER, Int32)
 
 COIT.runtests(
-    BRIDGED_OPTIMIZER,
+    # BRIDGED_OPTIMIZER,
+    OPTIMIZER,
     CONFIG,
 )

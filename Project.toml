@@ -5,14 +5,14 @@ repo = "https://github.com/dourouc05/JaCoP.jl"
 version = "0.1.0"
 
 [deps]
-JavaCall = "494afd89-becb-516b-aafa-70d2670c0337"
-MathOptInterface = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
 ConstraintProgrammingExtensions = "b65d079e-ed98-51d9-b0db-edee61a5c5f8"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+JavaCall = "494afd89-becb-516b-aafa-70d2670c0337"
+MathOptInterface = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-julia = "^1.6"
-MathOptInterface = "^0.10"
 ConstraintProgrammingExtensions = "^0.6.2, ^0.7"
 JavaCall = "^0.7.4"
+MathOptInterface = "^0.10, 1"
+julia = "^1.6"

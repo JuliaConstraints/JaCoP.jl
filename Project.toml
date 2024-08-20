@@ -1,7 +1,7 @@
 name = "JaCoP"
 uuid = "02462d8f-a5b3-44fd-8fd4-3169fe7a24c5"
 authors = ["Thibaut Cuvelier <cuvelier.thibaut@gmail.com>"]
-repo = "https://github.com/dourouc05/JaCoP.jl"
+repo = "https://github.com/JuliaConstraints/JaCoP.jl"
 version = "0.1.0"
 
 [deps]
@@ -12,7 +12,7 @@ Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-julia = "^1.6"
-MathOptInterface = "^0.10"
-ConstraintProgrammingExtensions = "^0.6.2, ^0.7"
-JavaCall = "^0.7.4"
+julia = "1.6"
+MathOptInterface = "1"
+ConstraintProgrammingExtensions = "0.7"
+JavaCall = "0.8"

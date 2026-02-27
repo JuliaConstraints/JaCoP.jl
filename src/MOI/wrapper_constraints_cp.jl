@@ -1,14 +1,14 @@
 # Good source of mappings from MiniZinc: 
 # https://github.com/radsz/jacop/blob/develop/src/main/java/org/jacop/fz/constraints/GlobalConstraints.java
 
-# CP.AllDifferent
+# MOI.AllDifferent
 function MOI.supports_constraint(
     ::Optimizer,
     ::Type{F},
     ::Type{S},
 ) where {
     F <: MOI.VectorOfVariables,
-    S <: CP.AllDifferent,
+    S <: MOI.AllDifferent,
 }
     return true
 end
@@ -16,7 +16,7 @@ end
 function _build_constraint(
     model::Optimizer,
     f::MOI.VectorOfVariables,
-    ::CP.AllDifferent,
+    ::MOI.AllDifferent,
 )
     # This could also be Alldiff or Alldistinct, with various algorithms
     # for filtering behind. TODO: add a parameter to choose?

@@ -49,6 +49,41 @@ function _build_constraint(
     return XeqC((IntVar, jint), v, Int32(s.value))
 end
 
+function _build_constraint(
+    model::Optimizer,
+    f::MOI.VariableIndex,
+    s::MOI.LessThan{T},
+) where {T <: Integer}
+    v = _info(model, f).variable
+    return XlteqC((IntVar, jint), v, Int32(s.upper))
+end
+
+function _build_constraint(
+    model::Optimizer,
+    f::MOI.VariableIndex,
+    s::MOI.GreaterThan{T},
+) where {T <: Integer}
+    v = _info(model, f).variable
+    return XgteqC((IntVar, jint), v, Int32(s.lower))
+end
+
+function MOI.add_constraint(
+    model::Optimizer,
+    f::MOI.VariableIndex,
+    s::MOI.Interval{T},
+) where {T <: Integer}
+    v = _info(model, f).variable
+    lb_constr = XgteqC((IntVar, jint), v, Int32(s.lower))
+    ub_constr = XlteqC((IntVar, jint), v, Int32(s.upper))
+    jacop_add_constraint_to_store(model.inner, lb_constr)
+    jacop_add_constraint_to_store(model.inner, ub_constr)
+    _info(model, f).lb = s.lower
+    _info(model, f).ub = s.upper
+    index = MOI.ConstraintIndex{MOI.VariableIndex, MOI.Interval{T}}(f.value)
+    model.constraint_info[index] = ConstraintInfo(index, nothing, f, s)
+    return index
+end
+
 function MOI.is_valid(
     model::Optimizer,
     c::MOI.ConstraintIndex{MOI.VariableIndex, MOI.ZeroOne},

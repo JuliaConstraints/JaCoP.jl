@@ -19,6 +19,8 @@ const LinearInt = @jimport org.jacop.constraints.LinearInt
 const Alldifferent = @jimport org.jacop.constraints.Alldifferent
 const In = @jimport org.jacop.constraints.In
 const XeqC = @jimport org.jacop.constraints.XeqC
+const XlteqC = @jimport org.jacop.constraints.XlteqC
+const XgteqC = @jimport org.jacop.constraints.XgteqC
 
 # Unions of types to model Java type hierarchy.
 

@@ -26,7 +26,7 @@ const Variable = Union{BooleanVar, IntVar, SetVar, FloatVar, CircuitVar}
 
 # Add a constraint to a store.
 
-function jacop_add_constraint_to_store(store::Store, constraint::Constraint)
+function jacop_add_constraint_to_store(store::Store, constraint)
     jcall(store, "impose", Nothing, (Constraint,), constraint)
     return
 end

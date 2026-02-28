@@ -22,6 +22,13 @@ const XeqC = @jimport org.jacop.constraints.XeqC
 const XlteqC = @jimport org.jacop.constraints.XlteqC
 const XgteqC = @jimport org.jacop.constraints.XgteqC
 
+# Search types.
+const DepthFirstSearch = @jimport org.jacop.search.DepthFirstSearch
+const InputOrderSelect = @jimport org.jacop.search.InputOrderSelect
+const IndomainMin = @jimport org.jacop.search.IndomainMin
+const Indomain = @jimport org.jacop.search.Indomain
+const SelectChoicePoint = @jimport org.jacop.search.SelectChoicePoint
+
 # Unions of types to model Java type hierarchy.
 
 const Variable = Union{BooleanVar, IntVar, SetVar, FloatVar, CircuitVar}

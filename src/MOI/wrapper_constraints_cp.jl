@@ -23,7 +23,7 @@ function _build_constraint(
     # http://jacopguide.osolpro.com/guideJaCoP.pdf#subsection.3.3.1
     # fzn-jacop uses Alldiff: 
     # https://github.com/radsz/jacop/blob/develop/src/main/java/org/jacop/fz/constraints/GlobalConstraints.java#L279
-    return Alldifferent(_parse_to_vars(model, f))
+    return Alldifferent((Vector{IntVar},), _parse_to_vars(model, f))
 end
 
 # CP.Domain

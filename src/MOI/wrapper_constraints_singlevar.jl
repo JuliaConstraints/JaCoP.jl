@@ -46,7 +46,7 @@ function _build_constraint(
     s::MOI.EqualTo{T},
 ) where {T <: Integer}
     v = _info(model, f).variable
-    return XeqC(v, s.value)
+    return XeqC((IntVar, jint), v, Int32(s.value))
 end
 
 function MOI.is_valid(

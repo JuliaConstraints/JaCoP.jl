@@ -6,7 +6,10 @@ function _build_constraint(
     s::MOI.GreaterThan{T},
 ) where {T <: Real}
     coeffs, vars, constant = _parse_to_coeffs_vars(model, f)
-    return LinearInt(model.inner, coeffs, vars, ">=", s.constant - constant)
+    return LinearInt(
+        (Store, Vector{jint}, Vector{IntVar}, JString, jint),
+        model.inner, coeffs, vars, ">=", Int32(s.constant - constant),
+    )
 end
 
 function _build_constraint(
@@ -15,7 +18,10 @@ function _build_constraint(
     s::MOI.LessThan{T},
 ) where {T <: Real}
     coeffs, vars, constant = _parse_to_coeffs_vars(model, f)
-    return LinearInt(model.inner, coeffs, vars, "<=", s.constant - constant)
+    return LinearInt(
+        (Store, Vector{jint}, Vector{IntVar}, JString, jint),
+        model.inner, coeffs, vars, "<=", Int32(s.constant - constant),
+    )
 end
 
 function _build_constraint(
@@ -24,7 +30,10 @@ function _build_constraint(
     s::MOI.EqualTo{T},
 ) where {T <: Real}
     coeffs, vars, constant = _parse_to_coeffs_vars(model, f)
-    return LinearInt(model.inner, coeffs, vars, "==", s.constant - constant)
+    return LinearInt(
+        (Store, Vector{jint}, Vector{IntVar}, JString, jint),
+        model.inner, coeffs, vars, "==", Int32(s.constant - constant),
+    )
 end
 
 # No vector of constraints, there is no more efficient way to do it.

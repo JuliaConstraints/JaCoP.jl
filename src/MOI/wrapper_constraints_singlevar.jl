@@ -40,13 +40,64 @@ function MOI.is_valid(
            _info(model, index).lb == _info(model, index).ub
 end
 
-function _build_constraint(
+function MOI.add_constraint(
     model::Optimizer,
     f::MOI.VariableIndex,
     s::MOI.EqualTo{T},
 ) where {T <: Integer}
     v = _info(model, f).variable
-    return XeqC(v, s.value)
+    constr = XeqC((IntVar, jint), v, Int32(s.value))
+    jacop_add_constraint_to_store(model.inner, constr)
+    _info(model, f).lb = s.value
+    _info(model, f).ub = s.value
+    index = MOI.ConstraintIndex{MOI.VariableIndex, MOI.EqualTo{T}}(f.value)
+    model.constraint_info[index] = ConstraintInfo(index, constr, f, s)
+    return index
+end
+
+function MOI.add_constraint(
+    model::Optimizer,
+    f::MOI.VariableIndex,
+    s::MOI.LessThan{T},
+) where {T <: Integer}
+    v = _info(model, f).variable
+    constr = XlteqC((IntVar, jint), v, Int32(s.upper))
+    jacop_add_constraint_to_store(model.inner, constr)
+    _info(model, f).ub = s.upper
+    index = MOI.ConstraintIndex{MOI.VariableIndex, MOI.LessThan{T}}(f.value)
+    model.constraint_info[index] = ConstraintInfo(index, constr, f, s)
+    return index
+end
+
+function MOI.add_constraint(
+    model::Optimizer,
+    f::MOI.VariableIndex,
+    s::MOI.GreaterThan{T},
+) where {T <: Integer}
+    v = _info(model, f).variable
+    constr = XgteqC((IntVar, jint), v, Int32(s.lower))
+    jacop_add_constraint_to_store(model.inner, constr)
+    _info(model, f).lb = s.lower
+    index = MOI.ConstraintIndex{MOI.VariableIndex, MOI.GreaterThan{T}}(f.value)
+    model.constraint_info[index] = ConstraintInfo(index, constr, f, s)
+    return index
+end
+
+function MOI.add_constraint(
+    model::Optimizer,
+    f::MOI.VariableIndex,
+    s::MOI.Interval{T},
+) where {T <: Integer}
+    v = _info(model, f).variable
+    lb_constr = XgteqC((IntVar, jint), v, Int32(s.lower))
+    ub_constr = XlteqC((IntVar, jint), v, Int32(s.upper))
+    jacop_add_constraint_to_store(model.inner, lb_constr)
+    jacop_add_constraint_to_store(model.inner, ub_constr)
+    _info(model, f).lb = s.lower
+    _info(model, f).ub = s.upper
+    index = MOI.ConstraintIndex{MOI.VariableIndex, MOI.Interval{T}}(f.value)
+    model.constraint_info[index] = ConstraintInfo(index, nothing, f, s)
+    return index
 end
 
 function MOI.is_valid(

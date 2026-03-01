@@ -237,7 +237,7 @@ function MOI.optimize!(model::Optimizer)
         search, "labeling", jboolean, (Store, SelectChoicePoint),
         model.inner, select,
     )
-    if result
+    if result != 0
         model.termination_status = MOI.OPTIMAL
         model.primal_status = MOI.FEASIBLE_POINT
     else

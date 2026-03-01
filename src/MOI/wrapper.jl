@@ -230,7 +230,7 @@ function MOI.optimize!(model::Optimizer)
     search = DepthFirstSearch(())
     indomain = IndomainMin(())
     select = InputOrderSelect(
-        (Store, Vector{IntVar}, Indomain),
+        (Store, Vector{Var}, Indomain),
         model.inner, int_vars, indomain,
     )
     result = jcall(

@@ -8,6 +8,7 @@
 # back to Julia.
 const Store = @jimport org.jacop.core.Store
 
+const Var = @jimport org.jacop.core.Var
 const BooleanVar = @jimport org.jacop.core.BooleanVar
 const IntVar = @jimport org.jacop.core.IntVar
 const SetVar = @jimport org.jacop.set.core.SetVar

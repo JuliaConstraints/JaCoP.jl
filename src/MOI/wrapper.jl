@@ -36,7 +36,7 @@ end
 mutable struct ConstraintInfo
     # Only necessary information to access an existing constraint, delete it when needed.
     index::MOI.ConstraintIndex
-    constraint::Union{Constraint, Nothing}
+    constraint::Union{JavaObject, Nothing}
     f::Union{MOI.AbstractScalarFunction, MOI.AbstractVectorFunction}
     set::MOI.AbstractSet
     name::String
@@ -44,7 +44,7 @@ end
 
 function ConstraintInfo(
     index::MOI.ConstraintIndex,
-    constraint::Union{Constraint, Nothing},
+    constraint::Union{JavaObject, Nothing},
     f::Union{MOI.AbstractScalarFunction, MOI.AbstractVectorFunction},
     set::MOI.AbstractSet,
 )
@@ -73,8 +73,9 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
     # objective_function_cp::Union{Nothing, NumExpr}
     # objective_cp::Union{Nothing, IloObjective}
 
-    # # Cache parts of a solution.
-    # cached_solution_state::Union{Nothing, Bool}
+    # Cached solution state.
+    termination_status::MOI.TerminationStatusCode
+    primal_status::MOI.ResultStatusCode
 
     # # Mappings from variable and constraint names to their indices. These are
     # # lazily built on-demand, so most of the time, they are `nothing`.
@@ -97,12 +98,14 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
             CleverDicts.CleverDict{MOI.VariableIndex, VariableInfo}()
         model.constraint_info = Dict{MOI.ConstraintIndex, ConstraintInfo}()
 
+        model.termination_status = MOI.OPTIMIZE_NOT_CALLED
+        model.primal_status = MOI.NO_SOLUTION
+
         # model.objective_sense = MOI.FEASIBILITY_SENSE
         # model.objective_function = nothing
         # model.objective_function_cp = nothing
         # model.objective_cp = nothing
 
-        # model.cached_solution_state = nothing
         # model.callback_state = CB_NONE
 
         MOI.empty!(model)
@@ -117,15 +120,8 @@ function MOI.empty!(model::Optimizer)
     model.name = ""
     empty!(model.variable_info)
     empty!(model.constraint_info)
-
-    # model.objective_sense = MOI.FEASIBILITY_SENSE
-    # model.objective_function = nothing
-    # model.objective_function_cp = nothing
-    # model.objective_cp = nothing
-
-    # model.cached_solution_state = nothing
-    # model.name_to_variable = nothing
-    # model.name_to_constraint = nothing
+    model.termination_status = MOI.OPTIMIZE_NOT_CALLED
+    model.primal_status = MOI.NO_SOLUTION
     return
 end
 
@@ -133,13 +129,7 @@ function MOI.is_empty(model::Optimizer)
     !isempty(model.name) && return false
     !isempty(model.variable_info) && return false
     !isempty(model.constraint_info) && return false
-    # model.objective_sense != MOI.FEASIBILITY_SENSE && return false
-    # model.objective_function !== nothing && return false
-    # model.objective_function_cp !== nothing && return false
-    # model.objective_cp !== nothing && return false
-    # model.name_to_variable !== nothing && return false
-    # model.name_to_constraint !== nothing && return false
-    # model.cached_solution_state !== nothing && return false
+    model.termination_status != MOI.OPTIMIZE_NOT_CALLED && return false
     return true
 end
 
@@ -225,4 +215,51 @@ end
 
 function MOI.get(::Optimizer, ::MOI.ListOfConstraintAttributesSet)
     return MOI.AbstractConstraintAttribute[MOI.ConstraintName()]
+end
+
+function MOI.optimize!(model::Optimizer)
+    int_vars = IntVar[
+        info.variable for info in values(model.variable_info)
+        if info.variable isa IntVar
+    ]
+    if isempty(int_vars)
+        model.termination_status = MOI.OPTIMAL
+        model.primal_status = MOI.FEASIBLE_POINT
+        return
+    end
+    search = DepthFirstSearch(())
+    indomain = IndomainMin(())
+    select = InputOrderSelect(
+        (Store, Vector{Var}, Indomain),
+        model.inner, int_vars, indomain,
+    )
+    result = jcall(
+        search, "labeling", jboolean, (Store, SelectChoicePoint),
+        model.inner, select,
+    )
+    if result != 0
+        model.termination_status = MOI.OPTIMAL
+        model.primal_status = MOI.FEASIBLE_POINT
+    else
+        model.termination_status = MOI.INFEASIBLE
+        model.primal_status = MOI.NO_SOLUTION
+    end
+    return
+end
+
+function MOI.get(model::Optimizer, ::MOI.TerminationStatus)
+    return model.termination_status
+end
+
+function MOI.get(model::Optimizer, ::MOI.PrimalStatus)
+    return model.primal_status
+end
+
+function MOI.get(model::Optimizer, ::MOI.ResultCount)
+    return model.primal_status == MOI.FEASIBLE_POINT ? 1 : 0
+end
+
+function MOI.get(model::Optimizer, ::MOI.VariablePrimal, vi::MOI.VariableIndex)
+    v = _info(model, vi).variable
+    return Int(jcall(v, "value", jint, ()))
 end

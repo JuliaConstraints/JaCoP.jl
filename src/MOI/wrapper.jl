@@ -23,14 +23,7 @@ mutable struct VariableInfo
 end
 
 function VariableInfo(index::MOI.VariableIndex, variable::Variable)
-    return VariableInfo(
-        index,
-        variable,
-        "",
-        INTEGER,
-        nothing,
-        nothing,
-    )
+    return VariableInfo(index, variable, "", INTEGER, nothing, nothing)
 end
 
 mutable struct ConstraintInfo
@@ -138,12 +131,7 @@ MOI.get(::Optimizer, ::MOI.SolverName) = "JaCoP"
 function MOI.supports(
     ::Optimizer,
     ::MOI.ObjectiveFunction{F},
-) where {
-    F <: Union{
-        MOI.VariableIndex,
-        MOI.ScalarAffineFunction{Float64},
-    },
-}
+) where {F <: Union{MOI.VariableIndex, MOI.ScalarAffineFunction{Float64}}}
     return true
 end
 
@@ -153,12 +141,8 @@ function MOI.supports_constraint(
     ::Type{F},
 ) where {
     T <: Union{Int32, Float64},
-    F <: Union{
-        MOI.EqualTo{T},
-        MOI.LessThan{T},
-        MOI.GreaterThan{T},
-        MOI.Interval{T},
-    },
+    F <:
+    Union{MOI.EqualTo{T}, MOI.LessThan{T}, MOI.GreaterThan{T}, MOI.Interval{T}},
 }
     return true
 end
@@ -169,8 +153,7 @@ function MOI.supports_constraint(
     ::Type{F},
 ) where {
     T <: Union{Int32, Float64},
-    F <:
-    Union{MOI.EqualTo{T}, MOI.LessThan{T}, MOI.GreaterThan{T}},
+    F <: Union{MOI.EqualTo{T}, MOI.LessThan{T}, MOI.GreaterThan{T}},
     # No interval!
 }
     return true
@@ -198,8 +181,8 @@ end
 
 function MOI.optimize!(model::Optimizer)
     int_vars = IntVar[
-        info.variable for info in values(model.variable_info)
-        if info.variable isa IntVar
+        info.variable for
+        info in values(model.variable_info) if info.variable isa IntVar
     ]
     if isempty(int_vars)
         model.termination_status = MOI.OPTIMAL
@@ -210,11 +193,17 @@ function MOI.optimize!(model::Optimizer)
     indomain = IndomainMin(())
     select = InputOrderSelect(
         (Store, Vector{Var}, Indomain),
-        model.inner, int_vars, indomain,
+        model.inner,
+        int_vars,
+        indomain,
     )
     result = jcall(
-        search, "labeling", jboolean, (Store, SelectChoicePoint),
-        model.inner, select,
+        search,
+        "labeling",
+        jboolean,
+        (Store, SelectChoicePoint),
+        model.inner,
+        select,
     )
     if result != 0
         model.termination_status = MOI.OPTIMAL

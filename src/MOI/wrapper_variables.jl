@@ -58,18 +58,10 @@ function _make_floatvar(
     ub::Union{Nothing, Float64}=nothing,
 )
     v = if lb === nothing && ub === nothing
-        FloatVar(
-            (Store,),
-            model.inner,
-        )
+        FloatVar((Store,), model.inner)
     else
         lb_, ub_ = _sanitise_bounds(lb, ub, Float64)
-        FloatVar(
-            (Store, jdouble, jdouble),
-            model.inner,
-            lb_,
-            ub_,
-        )
+        FloatVar((Store, jdouble, jdouble), model.inner, lb_, ub_)
     end
 
     vindex, cindex = _make_var(model, v, set)
@@ -86,18 +78,10 @@ function _make_intvar(
     ub::Int32=typemax(Int32),
 )
     v = if lb === nothing && ub === nothing
-        FloatVar(
-            (Store,),
-            model.inner,
-        )
+        FloatVar((Store,), model.inner)
     else
         lb_, ub_ = _sanitise_bounds(lb, ub, Int32)
-        IntVar(
-            (Store, jint, jint),
-            model.inner,
-            lb_,
-            ub_,
-        )
+        IntVar((Store, jint, jint), model.inner, lb_, ub_)
     end
 
     vindex, cindex = _make_var(model, v, set)
@@ -141,7 +125,6 @@ function MOI.add_variable(model::Optimizer)
     _info(model, vindex).ub = ub
     return vindex
 end
-
 
 function MOI.add_constrained_variable(
     model::Optimizer,

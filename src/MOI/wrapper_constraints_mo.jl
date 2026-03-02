@@ -8,7 +8,11 @@ function _build_constraint(
     coeffs, vars, constant = _parse_to_coeffs_vars(model, f)
     return LinearInt(
         (Store, Vector{jint}, Vector{IntVar}, JString, jint),
-        model.inner, coeffs, vars, ">=", Int32(s.constant - constant),
+        model.inner,
+        coeffs,
+        vars,
+        ">=",
+        Int32(s.constant - constant),
     )
 end
 
@@ -20,7 +24,11 @@ function _build_constraint(
     coeffs, vars, constant = _parse_to_coeffs_vars(model, f)
     return LinearInt(
         (Store, Vector{jint}, Vector{IntVar}, JString, jint),
-        model.inner, coeffs, vars, "<=", Int32(s.constant - constant),
+        model.inner,
+        coeffs,
+        vars,
+        "<=",
+        Int32(s.constant - constant),
     )
 end
 
@@ -32,7 +40,11 @@ function _build_constraint(
     coeffs, vars, constant = _parse_to_coeffs_vars(model, f)
     return LinearInt(
         (Store, Vector{jint}, Vector{IntVar}, JString, jint),
-        model.inner, coeffs, vars, "==", Int32(s.constant - constant),
+        model.inner,
+        coeffs,
+        vars,
+        "==",
+        Int32(s.constant - constant),
     )
 end
 

@@ -1,7 +1,4 @@
-function _parse_to_vars(
-    model::Optimizer,
-    f::MOI.VectorOfVariables,
-)
+function _parse_to_vars(model::Optimizer, f::MOI.VectorOfVariables)
     return [_info(model, v).variable for v in f.variables]
 end
 

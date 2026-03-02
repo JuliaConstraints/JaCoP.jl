@@ -113,8 +113,6 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
     end
 end
 
-Base.show(io::IO, model::Optimizer) = show(io, model.inner)
-
 function MOI.empty!(model::Optimizer)
     model.inner = Store()
     model.name = ""
@@ -178,27 +176,15 @@ function MOI.supports_constraint(
     return true
 end
 
-MOI.supports(::Optimizer, ::MOI.VariableName, ::Type{MOI.VariableIndex}) = true
-function MOI.supports(
-    ::Optimizer,
-    ::MOI.ConstraintName,
-    ::Type{<:MOI.ConstraintIndex},
-)
-    return true
-end
-
-MOI.supports(::Optimizer, ::MOI.Name) = true
 # MOI.supports(::Optimizer, ::MOI.NumberOfThreads) = true
 # MOI.supports(::Optimizer, ::MOI.TimeLimitSec) = true
 # MOI.supports(::Optimizer, ::MOI.ObjectiveSense) = true
 # MOI.supports(::Optimizer, ::MOI.RawOptimizerAttribute) = true
 
+MOI.supports_incremental_interface(::Optimizer) = true
+
 function MOI.copy_to(dest::Optimizer, src::MOI.ModelLike)
     return MOI.Utilities.default_copy_to(dest, src)
-end
-
-function MOI.get(::Optimizer, ::MOI.ListOfVariableAttributesSet)
-    return MOI.AbstractVariableAttribute[MOI.VariableName()]
 end
 
 function MOI.get(model::Optimizer, ::MOI.ListOfModelAttributesSet)
@@ -207,14 +193,7 @@ function MOI.get(model::Optimizer, ::MOI.ListOfModelAttributesSet)
     if typ !== nothing
         push!(attributes, MOI.ObjectiveFunction{typ}())
     end
-    if MOI.get(model, MOI.Name()) != ""
-        push!(attributes, MOI.Name())
-    end
     return attributes
-end
-
-function MOI.get(::Optimizer, ::MOI.ListOfConstraintAttributesSet)
-    return MOI.AbstractConstraintAttribute[MOI.ConstraintName()]
 end
 
 function MOI.optimize!(model::Optimizer)

@@ -113,7 +113,7 @@ function _make_boolvar(model::Optimizer, set::MOI.AbstractScalarSet)
     return vindex, cindex
 end
 
-function supports_add_constrained_variable(
+function MOI.supports_add_constrained_variable(
     ::Optimizer,
     ::Type{F},
 ) where {

@@ -41,11 +41,11 @@ function _make_vars(model::Optimizer, variables::Vector{<:Variable})
     return indices
 end
 
-function _sanitise_bounds(lb::Real, ub::Real, T)
-    if lb === nothing
+function _sanitise_bounds(lb::Union{Nothing, Real}, ub::Union{Nothing, Real}, T)
+    if isnothing(lb)
         lb = typemin(T)
     end
-    if ub === nothing
+    if isnothing(ub)
         ub = typemax(T)
     end
     return lb, ub
@@ -121,8 +121,6 @@ function MOI.add_variable(model::Optimizer)
     v = FloatVar((Store,), model.inner)
     vindex = _make_var(model, v)
     _info(model, vindex).type = CONTINUOUS
-    _info(model, vindex).lb = lb
-    _info(model, vindex).ub = ub
     return vindex
 end
 

@@ -70,14 +70,6 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
     termination_status::MOI.TerminationStatusCode
     primal_status::MOI.ResultStatusCode
 
-    # # Mappings from variable and constraint names to their indices. These are
-    # # lazily built on-demand, so most of the time, they are `nothing`.
-    # # The solver's functionality is not useful in this case, as it can only
-    # # handle integer variables. Moreover, bound constraints do not have names
-    # # for the solver.
-    # name_to_variable::Union{Nothing, Dict{String, MOI.VariableIndex}}
-    # name_to_constraint::Union{Nothing, Dict{String, MOI.ConstraintIndex}}
-
     """
         Optimizer()
 

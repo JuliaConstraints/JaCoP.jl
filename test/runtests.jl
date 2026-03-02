@@ -12,4 +12,5 @@ const COIT = CP.Test
 
 @testset "JaCoP" begin
     include("MOI.jl")
+    include("sudoku.jl")
 end

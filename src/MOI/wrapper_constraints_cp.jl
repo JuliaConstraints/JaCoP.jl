@@ -6,10 +6,7 @@ function MOI.supports_constraint(
     ::Optimizer,
     ::Type{F},
     ::Type{S},
-) where {
-    F <: MOI.VectorOfVariables,
-    S <: MOI.AllDifferent,
-}
+) where {F <: MOI.VectorOfVariables, S <: MOI.AllDifferent}
     return true
 end
 

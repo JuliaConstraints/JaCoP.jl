@@ -44,7 +44,7 @@ function MOI.add_constraint(
     model::Optimizer,
     f::MOI.VariableIndex,
     s::MOI.EqualTo{T},
-) where {T <: Integer}
+) where {T <: Real}
     v = _info(model, f).variable
     constr = XeqC((IntVar, jint), v, Int32(s.value))
     jacop_add_constraint_to_store(model.inner, constr)
@@ -59,7 +59,7 @@ function MOI.add_constraint(
     model::Optimizer,
     f::MOI.VariableIndex,
     s::MOI.LessThan{T},
-) where {T <: Integer}
+) where {T <: Real}
     v = _info(model, f).variable
     constr = XlteqC((IntVar, jint), v, Int32(s.upper))
     jacop_add_constraint_to_store(model.inner, constr)
@@ -73,7 +73,7 @@ function MOI.add_constraint(
     model::Optimizer,
     f::MOI.VariableIndex,
     s::MOI.GreaterThan{T},
-) where {T <: Integer}
+) where {T <: Real}
     v = _info(model, f).variable
     constr = XgteqC((IntVar, jint), v, Int32(s.lower))
     jacop_add_constraint_to_store(model.inner, constr)
@@ -87,7 +87,7 @@ function MOI.add_constraint(
     model::Optimizer,
     f::MOI.VariableIndex,
     s::MOI.Interval{T},
-) where {T <: Integer}
+) where {T <: Real}
     v = _info(model, f).variable
     lb_constr = XgteqC((IntVar, jint), v, Int32(s.lower))
     ub_constr = XlteqC((IntVar, jint), v, Int32(s.upper))

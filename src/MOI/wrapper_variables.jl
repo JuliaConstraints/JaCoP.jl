@@ -92,7 +92,7 @@ function _make_intvar(
 end
 
 function _make_boolvar(model::Optimizer, set::MOI.AbstractScalarSet)
-    vindex, cindex = _make_var(model, BoolVar((Store,), model.inner), set)
+    vindex, cindex = _make_var(model, BooleanVar((Store,), model.inner), set)
     _info(model, vindex).type = BINARY
     return vindex, cindex
 end

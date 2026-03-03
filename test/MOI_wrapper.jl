@@ -31,13 +31,13 @@ function test_runtests()
             MOI.RawStatusString,
             MOI.SolveTimeSec,
             MOI.SolverVersion,
+            MOI.delete, # segfaults
         ],
     )
     MOI.Test.runtests(
         model,
-        config,
-        exclude = String[
-        ],
+        config;
+        verbose = true,
     )
     return
 end

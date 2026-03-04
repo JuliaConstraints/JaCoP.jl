@@ -59,12 +59,11 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
     # VariableInfo also stores some additional fields like the type of variable.
     constraint_info::Dict{MOI.ConstraintIndex, ConstraintInfo}
 
-    # # Memorise the objective sense and the function separately, as the Concert
-    # # API forces to give both at the same time.
-    # objective_sense::MOI.OptimizationSense
-    # objective_function::Union{Nothing, MOI.AbstractScalarFunction}
-    # objective_function_cp::Union{Nothing, NumExpr}
-    # objective_cp::Union{Nothing, IloObjective}
+    # Objective sense (min/max/feasibility). Required for MOI tests.
+    objective_sense::MOI.OptimizationSense
+    # Type and value of the objective function if set; nothing otherwise.
+    objective_function_type::Union{Nothing, DataType}
+    objective_function::Union{Nothing, MOI.VariableIndex, MOI.ScalarAffineFunction{Float64}}
 
     # Cached solution state.
     termination_status::MOI.TerminationStatusCode
@@ -86,12 +85,9 @@ mutable struct Optimizer <: MOI.AbstractOptimizer
         model.termination_status = MOI.OPTIMIZE_NOT_CALLED
         model.primal_status = MOI.NO_SOLUTION
 
-        # model.objective_sense = MOI.FEASIBILITY_SENSE
-        # model.objective_function = nothing
-        # model.objective_function_cp = nothing
-        # model.objective_cp = nothing
-
-        # model.callback_state = CB_NONE
+        model.objective_sense = MOI.FEASIBILITY_SENSE
+        model.objective_function_type = nothing
+        model.objective_function = nothing
 
         MOI.empty!(model)
         return model
@@ -103,6 +99,9 @@ function MOI.empty!(model::Optimizer)
     model.name = ""
     empty!(model.variable_info)
     empty!(model.constraint_info)
+    model.objective_sense = MOI.FEASIBILITY_SENSE
+    model.objective_function_type = nothing
+    model.objective_function = nothing
     model.termination_status = MOI.OPTIMIZE_NOT_CALLED
     model.primal_status = MOI.NO_SOLUTION
     return
@@ -112,6 +111,8 @@ function MOI.is_empty(model::Optimizer)
     !isempty(model.name) && return false
     !isempty(model.variable_info) && return false
     !isempty(model.constraint_info) && return false
+    model.objective_sense != MOI.FEASIBILITY_SENSE && return false
+    (model.objective_function_type !== nothing || model.objective_function !== nothing) && return false
     model.termination_status != MOI.OPTIMIZE_NOT_CALLED && return false
     return true
 end
@@ -125,6 +126,25 @@ function MOI.supports(
     ::MOI.ObjectiveFunction{F},
 ) where {F <: Union{MOI.VariableIndex, MOI.ScalarAffineFunction{Float64}}}
     return true
+end
+
+function MOI.get(model::Optimizer, ::MOI.ObjectiveFunction{F}) where {F}
+    if model.objective_function_type !== F
+        error(
+            "Objective function type is $(model.objective_function_type), not $F.",
+        )
+    end
+    return model.objective_function::F
+end
+
+function MOI.set(
+    model::Optimizer,
+    ::MOI.ObjectiveFunction{F},
+    f::F,
+) where {F <: Union{MOI.VariableIndex, MOI.ScalarAffineFunction{Float64}}}
+    model.objective_function_type = F
+    model.objective_function = f
+    return
 end
 
 function MOI.supports_constraint(
@@ -153,7 +173,7 @@ end
 
 # MOI.supports(::Optimizer, ::MOI.NumberOfThreads) = true
 # MOI.supports(::Optimizer, ::MOI.TimeLimitSec) = true
-# MOI.supports(::Optimizer, ::MOI.ObjectiveSense) = true
+MOI.supports(::Optimizer, ::MOI.ObjectiveSense) = true
 # MOI.supports(::Optimizer, ::MOI.RawOptimizerAttribute) = true
 
 MOI.supports_incremental_interface(::Optimizer) = true
@@ -162,9 +182,22 @@ function MOI.copy_to(dest::Optimizer, src::MOI.ModelLike)
     return MOI.Utilities.default_copy_to(dest, src)
 end
 
+function MOI.get(model::Optimizer, ::MOI.ObjectiveSense)
+    return model.objective_sense
+end
+
+function MOI.set(model::Optimizer, ::MOI.ObjectiveSense, sense::MOI.OptimizationSense)
+    model.objective_sense = sense
+    return
+end
+
+function MOI.get(model::Optimizer, ::MOI.ObjectiveFunctionType)
+    return model.objective_function_type
+end
+
 function MOI.get(model::Optimizer, ::MOI.ListOfModelAttributesSet)
     attributes = Any[MOI.ObjectiveSense()]
-    typ = MOI.get(model, MOI.ObjectiveFunctionType())
+    typ = model.objective_function_type
     if typ !== nothing
         push!(attributes, MOI.ObjectiveFunction{typ}())
     end

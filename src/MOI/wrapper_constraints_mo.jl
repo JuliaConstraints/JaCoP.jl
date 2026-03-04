@@ -12,7 +12,7 @@ function _build_constraint(
         coeffs,
         vars,
         ">=",
-        Int32(s.constant - constant),
+        Int32(MOI.constant(s) - constant),
     )
 end
 
@@ -28,7 +28,7 @@ function _build_constraint(
         coeffs,
         vars,
         "<=",
-        Int32(s.constant - constant),
+        Int32(MOI.constant(s) - constant),
     )
 end
 
@@ -44,7 +44,7 @@ function _build_constraint(
         coeffs,
         vars,
         "==",
-        Int32(s.value - constant),
+        Int32(MOI.constant(s) - constant),
     )
 end
 

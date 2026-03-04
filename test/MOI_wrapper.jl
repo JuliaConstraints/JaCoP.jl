@@ -38,6 +38,13 @@ function test_runtests()
         model,
         config;
         verbose = true,
+        exclude = [
+            # MathOptInterface.Bridges.BridgeRequiresFiniteDomainError{MathOptInterface.Bridges.Constraint.IntegerToZeroOneBridge{Float64}, MathOptInterface.VariableIndex}:
+            "test_solve_ObjectiveBound_MAX_SENSE_IP",
+            "test_solve_ObjectiveBound_MIN_SENSE_IP",
+            "test_variable_solve_Integer_with_lower_bound",
+            "test_variable_solve_Integer_with_upper_bound",
+        ],
     )
     return
 end

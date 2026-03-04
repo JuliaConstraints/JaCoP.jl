@@ -44,7 +44,7 @@ function _build_constraint(
         coeffs,
         vars,
         "==",
-        Int32(s.constant - constant),
+        Int32(s.value - constant),
     )
 end
 

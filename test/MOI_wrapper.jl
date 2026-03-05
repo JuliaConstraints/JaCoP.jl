@@ -28,6 +28,7 @@ function test_runtests()
             MOI.VariableBasisStatus,
             MOI.ConstraintName,
             MOI.VariableName,
+            MOI.ConstraintDual,
             MOI.RawStatusString,
             MOI.SolveTimeSec,
             MOI.SolverVersion,

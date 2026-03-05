@@ -17,6 +17,7 @@ const CircuitVar = @jimport org.jacop.constraints.CircuitVar
 
 const Constraint = @jimport org.jacop.constraints.Constraint
 const LinearInt = @jimport org.jacop.constraints.LinearInt
+const LinearFloat = @jimport org.jacop.floats.constraints.LinearFloat
 const Alldifferent = @jimport org.jacop.constraints.Alldifferent
 const In = @jimport org.jacop.constraints.In
 const XeqC = @jimport org.jacop.constraints.XeqC

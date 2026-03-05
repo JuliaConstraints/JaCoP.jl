@@ -51,18 +51,22 @@ function _sanitise_bounds(lb::Union{Nothing, Real}, ub::Union{Nothing, Real}, T)
     return lb, ub
 end
 
+# JaCoP FloatVar requires explicit bounds; unbounded would leave internal intervals null (NPE).
+const _DEFAULT_FLOAT_LB = -1.0e30
+const _DEFAULT_FLOAT_UB = 1.0e30
+
 function _make_floatvar(
     model::Optimizer,
     set::MOI.AbstractScalarSet;
     lb::Union{Nothing, Float64}=nothing,
     ub::Union{Nothing, Float64}=nothing,
 )
-    v = if lb === nothing && ub === nothing
-        FloatVar((Store,), model.inner)
-    else
-        lb_, ub_ = _sanitise_bounds(lb, ub, Float64)
-        FloatVar((Store, jdouble, jdouble), model.inner, lb_, ub_)
-    end
+    lb_, ub_ = _sanitise_bounds(
+        something(lb, _DEFAULT_FLOAT_LB),
+        something(ub, _DEFAULT_FLOAT_UB),
+        Float64,
+    )
+    v = FloatVar((Store, jdouble, jdouble), model.inner, lb_, ub_)
 
     vindex, cindex = _make_var(model, v, set)
     _info(model, vindex).type = CONTINUOUS
@@ -118,7 +122,12 @@ function MOI.supports_add_constrained_variable(
 end
 
 function MOI.add_variable(model::Optimizer)
-    v = FloatVar((Store,), model.inner)
+    v = FloatVar(
+        (Store, jdouble, jdouble),
+        model.inner,
+        _DEFAULT_FLOAT_LB,
+        _DEFAULT_FLOAT_UB,
+    )
     vindex = _make_var(model, v)
     _info(model, vindex).type = CONTINUOUS
     return vindex

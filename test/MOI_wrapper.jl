@@ -28,6 +28,7 @@ function test_runtests()
             MOI.VariableBasisStatus,
             MOI.ConstraintName,
             MOI.VariableName,
+            MOI.DualStatus,
             MOI.ConstraintDual,
             MOI.RawStatusString,
             MOI.SolveTimeSec,
@@ -45,6 +46,13 @@ function test_runtests()
             "test_solve_ObjectiveBound_MIN_SENSE_IP",
             "test_variable_solve_Integer_with_lower_bound",
             "test_variable_solve_Integer_with_upper_bound",
+            # JaCoP does not support dual values
+            "test_DualObjectiveValue_Max_ScalarAffine_LessThan",
+            "test_DualObjectiveValue_Max_VariableIndex_LessThan",
+            "test_DualObjectiveValue_Min_ScalarAffine_GreaterThan",
+            "test_DualObjectiveValue_Min_VariableIndex_GreaterThan",
+            # Segfaults due to JaCoP/JavaCall delete issue
+            "test_linear_integration_delete_variables",
         ],
     )
     return

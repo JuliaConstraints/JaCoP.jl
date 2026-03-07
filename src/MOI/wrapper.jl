@@ -209,28 +209,53 @@ function MOI.optimize!(model::Optimizer)
         info.variable for
         info in values(model.variable_info) if info.variable isa IntVar
     ]
-    if isempty(int_vars)
+    float_vars = FloatVar[
+        info.variable for
+        info in values(model.variable_info) if info.variable isa FloatVar
+    ]
+    if isempty(int_vars) && isempty(float_vars)
         model.termination_status = MOI.OPTIMAL
         model.primal_status = MOI.FEASIBLE_POINT
         return
     end
-    search = DepthFirstSearch(())
-    indomain = IndomainMin(())
-    select = InputOrderSelect(
-        (Store, Vector{Var}, Indomain),
-        model.inner,
-        int_vars,
-        indomain,
-    )
-    result = jcall(
-        search,
-        "labeling",
-        jboolean,
-        (Store, SelectChoicePoint),
-        model.inner,
-        select,
-    )
-    if result != 0
+    result = true
+    if !isempty(int_vars)
+        search = DepthFirstSearch(())
+        indomain = IndomainMin(())
+        select = InputOrderSelect(
+            (Store, Vector{Var}, Indomain),
+            model.inner,
+            int_vars,
+            indomain,
+        )
+        result = jcall(
+            search,
+            "labeling",
+            jboolean,
+            (Store, SelectChoicePoint),
+            model.inner,
+            select,
+        ) != 0
+    end
+    if result && !isempty(float_vars)
+        search_float = DepthFirstSearch(())
+        comparator = SmallestDomainFloat(())
+        select_float = SplitSelectFloat(
+            (Store, Vector{FloatVar}, ComparatorVariable),
+            model.inner,
+            float_vars,
+            comparator,
+        )
+        result = jcall(
+            search_float,
+            "labeling",
+            jboolean,
+            (Store, SelectChoicePoint),
+            model.inner,
+            select_float,
+        ) != 0
+    end
+    if result
         model.termination_status = MOI.OPTIMAL
         model.primal_status = MOI.FEASIBLE_POINT
     else
@@ -253,6 +278,11 @@ function MOI.get(model::Optimizer, ::MOI.ResultCount)
 end
 
 function MOI.get(model::Optimizer, ::MOI.VariablePrimal, vi::MOI.VariableIndex)
-    v = _info(model, vi).variable
-    return Int(jcall(v, "value", jint, ()))
+    info = _info(model, vi)
+    v = info.variable
+    if v isa FloatVar
+        return Float64(jcall(v, "value", jdouble, ()))
+    else
+        return Int(jcall(v, "value", jint, ()))
+    end
 end

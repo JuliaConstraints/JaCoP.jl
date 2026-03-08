@@ -240,8 +240,9 @@ function MOI.optimize!(model::Optimizer)
     if result && !isempty(float_vars)
         search_float = DepthFirstSearch(())
         comparator = SmallestDomainFloat(())
+        # JNI: use Var[] (FloatVar[] passes as subclass); 3rd arg is ComparatorVariable.
         select_float = SplitSelectFloat(
-            (Store, Vector{FloatVar}, ComparatorVariable),
+            (Store, Vector{Var}, ComparatorVariable),
             model.inner,
             float_vars,
             comparator,

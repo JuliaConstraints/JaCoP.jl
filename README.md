@@ -43,3 +43,6 @@ To use JaCoP with JuMP, use `JaCoP.Optimizer`:
 using JuMP, JaCoP
 model = Model(JaCoP.Optimizer)
 ```
+
+> [!WARNING]
+> There is a know issue where JaCoP.jl segfaults if you delete variables or constraints.

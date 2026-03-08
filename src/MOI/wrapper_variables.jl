@@ -41,15 +41,19 @@ function _make_vars(model::Optimizer, variables::Vector{<:Variable})
     return indices
 end
 
-function _sanitise_bounds(lb::Real, ub::Real, T)
-    if lb === nothing
+function _sanitise_bounds(lb::Union{Nothing, Real}, ub::Union{Nothing, Real}, T)
+    if isnothing(lb)
         lb = typemin(T)
     end
-    if ub === nothing
+    if isnothing(ub)
         ub = typemax(T)
     end
     return lb, ub
 end
+
+# JaCoP FloatVar requires explicit bounds; unbounded would leave internal intervals null (NPE).
+const _DEFAULT_FLOAT_LB = -1.0e30
+const _DEFAULT_FLOAT_UB = 1.0e30
 
 function _make_floatvar(
     model::Optimizer,
@@ -57,12 +61,12 @@ function _make_floatvar(
     lb::Union{Nothing, Float64}=nothing,
     ub::Union{Nothing, Float64}=nothing,
 )
-    v = if lb === nothing && ub === nothing
-        FloatVar((Store,), model.inner)
-    else
-        lb_, ub_ = _sanitise_bounds(lb, ub, Float64)
-        FloatVar((Store, jdouble, jdouble), model.inner, lb_, ub_)
-    end
+    lb_, ub_ = _sanitise_bounds(
+        something(lb, _DEFAULT_FLOAT_LB),
+        something(ub, _DEFAULT_FLOAT_UB),
+        Float64,
+    )
+    v = FloatVar((Store, jdouble, jdouble), model.inner, lb_, ub_)
 
     vindex, cindex = _make_var(model, v, set)
     _info(model, vindex).type = CONTINUOUS
@@ -92,7 +96,7 @@ function _make_intvar(
 end
 
 function _make_boolvar(model::Optimizer, set::MOI.AbstractScalarSet)
-    vindex, cindex = _make_var(model, BoolVar((Store,), model.inner), set)
+    vindex, cindex = _make_var(model, BooleanVar((Store,), model.inner), set)
     _info(model, vindex).type = BINARY
     return vindex, cindex
 end
@@ -118,11 +122,14 @@ function MOI.supports_add_constrained_variable(
 end
 
 function MOI.add_variable(model::Optimizer)
-    v = FloatVar((Store,), model.inner)
+    v = FloatVar(
+        (Store, jdouble, jdouble),
+        model.inner,
+        _DEFAULT_FLOAT_LB,
+        _DEFAULT_FLOAT_UB,
+    )
     vindex = _make_var(model, v)
     _info(model, vindex).type = CONTINUOUS
-    _info(model, vindex).lb = lb
-    _info(model, vindex).ub = ub
     return vindex
 end
 

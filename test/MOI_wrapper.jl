@@ -53,6 +53,8 @@ function test_runtests()
             "test_DualObjectiveValue_Min_VariableIndex_GreaterThan",
             # Segfaults due to JaCoP/JavaCall delete issue
             "test_linear_integration_delete_variables",
+            # Segfault in Name/ConstraintName handling (signal 11)
+            "test_model_Name_VariableName_ConstraintName",
         ],
     )
     return

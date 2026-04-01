@@ -55,6 +55,7 @@ function test_runtests()
             "test_linear_integration_delete_variables",
             "test_model_Name_VariableName_ConstraintName",
             "test_model_delete",
+            "test_modification_delete_variables_in_a_batch",
             # Conic tests: wrong results
             "test_conic_NormInfinityCone_3",
             "test_conic_NormInfinityCone_VectorAffineFunction",

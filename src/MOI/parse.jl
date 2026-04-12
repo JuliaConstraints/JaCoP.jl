@@ -19,3 +19,12 @@ function _parse_to_coeffs_vars(
     vars = Variable[_info(model, t.variable).variable for t in terms]
     return coeffs, vars
 end
+
+function _parse_to_coeffs_vars(
+    model::Optimizer,
+    terms::Vector{MOI.ScalarAffineTerm{T}},
+) where {T <: Real}
+    coeffs = Int32[round(Int, t.coefficient) for t in terms]
+    vars = Variable[_info(model, t.variable).variable for t in terms]
+    return coeffs, vars
+end

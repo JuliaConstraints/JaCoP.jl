@@ -17,18 +17,24 @@ const CircuitVar = @jimport org.jacop.constraints.CircuitVar
 
 const Constraint = @jimport org.jacop.constraints.Constraint
 const LinearInt = @jimport org.jacop.constraints.LinearInt
+const LinearFloat = @jimport org.jacop.floats.constraints.LinearFloat
 const Alldifferent = @jimport org.jacop.constraints.Alldifferent
 const In = @jimport org.jacop.constraints.In
 const XeqC = @jimport org.jacop.constraints.XeqC
 const XlteqC = @jimport org.jacop.constraints.XlteqC
 const XgteqC = @jimport org.jacop.constraints.XgteqC
 
-# Search types.
+# Search types (integer).
 const DepthFirstSearch = @jimport org.jacop.search.DepthFirstSearch
 const InputOrderSelect = @jimport org.jacop.search.InputOrderSelect
 const IndomainMin = @jimport org.jacop.search.IndomainMin
 const Indomain = @jimport org.jacop.search.Indomain
 const SelectChoicePoint = @jimport org.jacop.search.SelectChoicePoint
+
+# Search types (float).
+const ComparatorVariable = @jimport org.jacop.search.ComparatorVariable
+const SplitSelectFloat = @jimport org.jacop.floats.search.SplitSelectFloat
+const SmallestDomainFloat = @jimport org.jacop.floats.search.SmallestDomainFloat
 
 # Unions of types to model Java type hierarchy.
 

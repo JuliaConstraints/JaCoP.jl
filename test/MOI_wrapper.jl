@@ -57,6 +57,7 @@ function test_runtests()
             "test_model_delete",
             "test_modification_delete_variables_in_a_batch",
             "test_multiobjective_vector_affine_function_delete_vector",
+            "delete",
             # Conic tests: wrong results
             "test_conic_NormInfinityCone_3",
             "test_conic_NormInfinityCone_VectorAffineFunction",

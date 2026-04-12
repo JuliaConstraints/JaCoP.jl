@@ -278,7 +278,8 @@ function MOI.get(model::Optimizer, ::MOI.ResultCount)
     return model.primal_status == MOI.FEASIBLE_POINT ? 1 : 0
 end
 
-function MOI.get(model::Optimizer, ::MOI.VariablePrimal, vi::MOI.VariableIndex)
+function MOI.get(model::Optimizer, attr::MOI.VariablePrimal, vi::MOI.VariableIndex)
+    MOI.check_result_index_bounds(model, attr)
     info = _info(model, vi)
     v = info.variable
     if v isa FloatVar
@@ -287,3 +288,28 @@ function MOI.get(model::Optimizer, ::MOI.VariablePrimal, vi::MOI.VariableIndex)
         return Int(jcall(v, "value", jint, ()))
     end
 end
+
+function _eval_objective(model::Optimizer)
+    if model.objective_sense == MOI.FEASIBILITY_SENSE
+        return 0.0
+    end
+    f = model.objective_function
+    if f === nothing
+        return 0.0
+    elseif f isa MOI.VariableIndex
+        return Float64(MOI.get(model, MOI.VariablePrimal(1), f))
+    else
+        # ScalarAffineFunction
+        val = Float64(f.constant)
+        for term in f.terms
+            val += term.coefficient * Float64(MOI.get(model, MOI.VariablePrimal(1), term.variable))
+        end
+        return val
+    end
+end
+
+function MOI.get(model::Optimizer, attr::MOI.ObjectiveValue)
+    MOI.check_result_index_bounds(model, attr)
+    return _eval_objective(model)
+end
+

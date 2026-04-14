@@ -51,13 +51,6 @@ function test_runtests()
             "test_DualObjectiveValue_Max_VariableIndex_LessThan",
             "test_DualObjectiveValue_Min_ScalarAffine_GreaterThan",
             "test_DualObjectiveValue_Min_VariableIndex_GreaterThan",
-            # Segfaults due to JaCoP/JavaCall delete issue
-            "test_linear_integration_delete_variables",
-            "test_model_Name_VariableName_ConstraintName",
-            "test_model_delete",
-            "test_modification_delete_variables_in_a_batch",
-            "test_multiobjective_vector_affine_function_delete_vector",
-            "delete",
             # Conic tests: wrong results
             "test_conic_NormInfinityCone_3",
             "test_conic_NormInfinityCone_VectorAffineFunction",

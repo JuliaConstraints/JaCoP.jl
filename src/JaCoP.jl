@@ -47,6 +47,9 @@ it sets Java's CLASSPATH to include JaCoP.
 function jacop_java_init(init_java::Bool=true)
     JavaCall.addClassPath(libjacopjava)
     if init_java
+        # Increase the JVM thread stack size to avoid segfaults when
+        # JULIA_COPY_STACKS=1 is used (required by JavaCall on Julia ≥ 1.12).
+        JavaCall.addOpts("-Xss2m")
         JavaCall.init()
     end
     return

@@ -49,6 +49,13 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v2
+      - name: JavaCall
+        shell: julia --project=@. {0}
+        run: |
+          using Pkg
+          Pkg.add([
+              PackageSpec(url="https://github.com/blegat/JavaCall.jl", rev="jacop"),
+          ])
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1

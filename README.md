@@ -45,4 +45,14 @@ model = Model(JaCoP.Optimizer)
 ```
 
 > [!WARNING]
-> There is a know issue where JaCoP.jl segfaults if you delete variables or constraints.
+> There is a known issue where JaCoP.jl segfaults if you delete variables or constraints.
+
+> [!TIP]
+> If you experience segfaults (e.g., on Julia 1.12.6+), try adding `-Xss2m` to
+> increase the JVM thread stack size before initializing JavaCall:
+> ```julia
+> JavaCall.addOpts("-Xss2m")
+> ```
+> JaCoP.jl already does this automatically, but if you initialize JavaCall
+> yourself (by passing `init_java=false` to `jacop_java_init`), you may need
+> to add this option manually.

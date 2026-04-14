@@ -46,12 +46,7 @@ function test_runtests()
             "test_solve_ObjectiveBound_MIN_SENSE_IP",
             "test_variable_solve_Integer_with_lower_bound",
             "test_variable_solve_Integer_with_upper_bound",
-            # JaCoP does not support dual values
-            "test_DualObjectiveValue_Max_ScalarAffine_LessThan",
-            "test_DualObjectiveValue_Max_VariableIndex_LessThan",
-            "test_DualObjectiveValue_Min_ScalarAffine_GreaterThan",
-            "test_DualObjectiveValue_Min_VariableIndex_GreaterThan",
-            # Conic tests: wrong results
+            # Conic tests: wrong results (float optimization not supported)
             "test_conic_NormInfinityCone_3",
             "test_conic_NormInfinityCone_VectorAffineFunction",
             "test_conic_NormInfinityCone_VectorOfVariables",
@@ -60,13 +55,13 @@ function test_runtests()
             "test_conic_NormOneCone_VectorOfVariables",
             "test_conic_linear_VectorAffineFunction",
             "test_conic_linear_VectorOfVariables",
-            # Constraint tests
+            # Constraint tests: float variables return wrong values
             "test_constraint_ScalarAffineFunction_Interval",
             "test_constraint_ScalarAffineFunction_LessThan",
             "test_constraint_ScalarAffineFunction_duplicate",
             "test_constraint_VectorAffineFunction_duplicate",
             "test_constraint_ZeroOne_bounds",
-            # CP-SAT tests
+            # CP-SAT tests: not supported by bridge layer
             "test_cpsat_BinPacking",
             "test_cpsat_Circuit",
             "test_cpsat_CountAtLeast",
@@ -75,7 +70,7 @@ function test_runtests()
             "test_cpsat_CountGreaterThan",
             "test_cpsat_ReifiedAllDifferent",
             "test_cpsat_Table",
-            # Linear tests
+            # Linear tests: float optimization / mixed integer-continuous not supported
             "test_linear_DUAL_INFEASIBLE",
             "test_linear_HyperRectangle_VectorAffineFunction",
             "test_linear_HyperRectangle_VectorOfVariables",
@@ -84,6 +79,8 @@ function test_runtests()
             "test_linear_Indicator_constant_term",
             "test_linear_Indicator_integration",
             "test_linear_LessThan_and_GreaterThan",
+            "test_linear_SOS1_integration",
+            "test_linear_SOS2_integration",
             "test_linear_Semicontinuous_integration",
             "test_linear_Semiinteger_integration",
             "test_linear_VariablePrimalStart_partial",
@@ -101,19 +98,20 @@ function test_runtests()
             "test_linear_transform",
             "test_linear_variable_open_intervals",
             "test_conic_linear_INFEASIBLE_2",
-            "test_linear_SOS1_integration",
-            "test_linear_SOS2_integration",
+            # Modification tests: float optimization issues
             "test_modification_affine_deletion_edge_cases",
             "test_modification_coef_scalaraffine_lessthan",
             "test_modification_const_vectoraffine_nonpos",
             "test_modification_func_scalaraffine_lessthan",
             "test_modification_multirow_vectoraffine_nonpos",
             "test_modification_set_scalaraffine_lessthan",
+            # Solve tests
             "test_solve_ObjectiveBound_MAX_SENSE_LP",
             "test_solve_ObjectiveBound_MIN_SENSE_LP",
             "test_solve_SOS2_add_and_delete",
             "test_solve_TerminationStatus_DUAL_INFEASIBLE",
             "test_solve_result_index",
+            # Variable solve tests
             "test_variable_solve_ZeroOne_with_0_upper_bound",
             "test_variable_solve_ZeroOne_with_1_lower_bound",
             "test_variable_solve_ZeroOne_with_upper_bound",

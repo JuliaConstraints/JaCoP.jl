@@ -53,6 +53,6 @@ model = Model(JaCoP.Optimizer)
 > ```julia
 > JavaCall.addOpts("-Xss2m")
 > ```
-> JaCoP.jl already does this automatically, but if you initialize JavaCall
+> JaCoP.jl [already does this automatically](https://github.com/JuliaConstraints/JaCoP.jl/blob/39f387de53fed270cba4368079502a4da7ac01bb/src/JaCoP.jl#L50-L52), but if you initialize JavaCall
 > yourself (by passing `init_java=false` to `jacop_java_init`), you may need
 > to add this option manually.
